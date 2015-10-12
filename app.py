@@ -1,5 +1,7 @@
 from flask import Flask
 from flask import render_template
+from flask import request
+
 
 import json
 import time
@@ -15,11 +17,18 @@ def index():
     return render_template("index.html")
 
 @app.route("/getData/")
+
 def getData():
-	
+    
+	lat1 = str(request.args.get('lat1'))
+        lng1 = str(request.args.get('lng1'))
+        lat2 = str(request.args.get('lat2'))
+        lng2 = str(request.args.get('lng2'))
+
+
 	client = pyorient.OrientDB("localhost", 2424)
-	session_id = client.connect("root", "password")
-	db_name = "property_test"
+	session_id = client.connect("root", "A43B7554D92A15A4B8C52F38B1236F0ECA680D07F2B8446E6512A6BDD6CD7D2B")
+	db_name = "soufun"
 	db_username = "admin"
 	db_password = "admin"
 
@@ -30,11 +39,7 @@ def getData():
 		print "database [" + db_name + "] does not exist! session ending..."
 		sys.exit()
 		
-	lat1 = 22.532498
-	lat2 = 22.552317
-
-	lng1 = 114.044329
-	lng2 = 114.076644
+	
 
 	query = 'SELECT FROM Listing WHERE latitude BETWEEN {} AND {} AND longitude BETWEEN {} AND {}'
 
@@ -44,8 +49,10 @@ def getData():
 	records = records[:100]
 
 	numListings = len(records)
+	
 	print 'received ' + str(numListings) + ' records'
-
+        print "received coordinates: [" + lat1 + ", " + lat2 + "], [" + lng1 + ", " + lng2 + "]"
+        
 	client.db_close()
 
 	output = {"type":"FeatureCollection","features":[]}
